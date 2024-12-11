@@ -6,6 +6,8 @@
 "./Core/Src/lcd.o"
 "./Core/Src/led_7seg.o"
 "./Core/Src/main.o"
+"./Core/Src/my_clock.o"
+"./Core/Src/my_display.o"
 "./Core/Src/picture.o"
 "./Core/Src/software_timer.o"
 "./Core/Src/spi.o"

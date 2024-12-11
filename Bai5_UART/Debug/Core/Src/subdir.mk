@@ -13,6 +13,8 @@ C_SRCS += \
 ../Core/Src/lcd.c \
 ../Core/Src/led_7seg.c \
 ../Core/Src/main.c \
+../Core/Src/my_clock.c \
+../Core/Src/my_display.c \
 ../Core/Src/picture.c \
 ../Core/Src/software_timer.c \
 ../Core/Src/spi.c \
@@ -35,6 +37,8 @@ OBJS += \
 ./Core/Src/lcd.o \
 ./Core/Src/led_7seg.o \
 ./Core/Src/main.o \
+./Core/Src/my_clock.o \
+./Core/Src/my_display.o \
 ./Core/Src/picture.o \
 ./Core/Src/software_timer.o \
 ./Core/Src/spi.o \
@@ -57,6 +61,8 @@ C_DEPS += \
 ./Core/Src/lcd.d \
 ./Core/Src/led_7seg.d \
 ./Core/Src/main.d \
+./Core/Src/my_clock.d \
+./Core/Src/my_display.d \
 ./Core/Src/picture.d \
 ./Core/Src/software_timer.d \
 ./Core/Src/spi.d \

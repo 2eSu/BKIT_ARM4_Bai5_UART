@@ -29,23 +29,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  12 .ARM.attributes 00000030  00000000  00000000  00020078  2**0
                   CONTENTS, READONLY
- 13 .debug_info   0001c25e  00000000  00000000  000200a8  2**0
+ 13 .debug_info   0001c6fc  00000000  00000000  000200a8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_abbrev 00003c3a  00000000  00000000  0003c306  2**0
+ 14 .debug_abbrev 00003cbe  00000000  00000000  0003c7a4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_aranges 00001500  00000000  00000000  0003ff40  2**3
+ 15 .debug_aranges 00001528  00000000  00000000  00040468  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_ranges 00001370  00000000  00000000  00041440  2**3
+ 16 .debug_ranges 00001398  00000000  00000000  00041990  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_macro  0002460d  00000000  00000000  000427b0  2**0
+ 17 .debug_macro  00024699  00000000  00000000  00042d28  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   0001bdcc  00000000  00000000  00066dbd  2**0
+ 18 .debug_line   0001bec6  00000000  00000000  000673c1  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000d34b8  00000000  00000000  00082b89  2**0
+ 19 .debug_str    000d35d6  00000000  00000000  00083287  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000053  00000000  00000000  00156041  2**0
+ 20 .comment      00000053  00000000  00000000  0015685d  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  00005a4c  00000000  00000000  00156094  2**2
+ 21 .debug_frame  00005b10  00000000  00000000  001568b0  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -414,10 +414,10 @@ Disassembly of section .text:
  8000566:	bf00      	nop
 
 08000568 <button_init>:
-#include "button.h"
 
 uint16_t button_count[16];
 uint16_t spi_button = 0x0000;
+uint16_t time_value = LONG_PRESSED_TIME / READ_BUTTON_TIME;
 
 void button_init(){
  8000568:	b580      	push	{r7, lr}
@@ -435,79 +435,88 @@ void button_init(){
 
 08000580 <button_Scan>:
 
-void button_Scan(){
+void button_Scan()
+{
  8000580:	b580      	push	{r7, lr}
  8000582:	b084      	sub	sp, #16
  8000584:	af00      	add	r7, sp, #0
-	  HAL_GPIO_WritePin(BTN_LOAD_GPIO_Port, BTN_LOAD_Pin, 0);
+	HAL_GPIO_WritePin(BTN_LOAD_GPIO_Port, BTN_LOAD_Pin, 0);
  8000586:	2200      	movs	r2, #0
  8000588:	2108      	movs	r1, #8
  800058a:	482f      	ldr	r0, [pc, #188]	; (8000648 <button_Scan+0xc8>)
  800058c:	f001 fd98 	bl	80020c0 <HAL_GPIO_WritePin>
-	  HAL_GPIO_WritePin(BTN_LOAD_GPIO_Port, BTN_LOAD_Pin, 1);
+	HAL_GPIO_WritePin(BTN_LOAD_GPIO_Port, BTN_LOAD_Pin, 1);
  8000590:	2201      	movs	r2, #1
  8000592:	2108      	movs	r1, #8
  8000594:	482c      	ldr	r0, [pc, #176]	; (8000648 <button_Scan+0xc8>)
  8000596:	f001 fd93 	bl	80020c0 <HAL_GPIO_WritePin>
-	  HAL_SPI_Receive(&hspi1, (void*)&spi_button, 2, 10);
+	HAL_SPI_Receive(&hspi1, (void *)&spi_button, 2, 10);
  800059a:	230a      	movs	r3, #10
  800059c:	2202      	movs	r2, #2
  800059e:	492b      	ldr	r1, [pc, #172]	; (800064c <button_Scan+0xcc>)
  80005a0:	482b      	ldr	r0, [pc, #172]	; (8000650 <button_Scan+0xd0>)
  80005a2:	f003 f9e8 	bl	8003976 <HAL_SPI_Receive>
-	  int button_index = 0;
+	int button_index = 0;
  80005a6:	2300      	movs	r3, #0
  80005a8:	60fb      	str	r3, [r7, #12]
-	  uint16_t mask = 0x8000;
+	uint16_t mask = 0x8000;
  80005aa:	f44f 4300 	mov.w	r3, #32768	; 0x8000
  80005ae:	817b      	strh	r3, [r7, #10]
-	  for(int i = 0; i < 16; i++){
+	for (int i = 0; i < 16; i++)
  80005b0:	2300      	movs	r3, #0
  80005b2:	607b      	str	r3, [r7, #4]
  80005b4:	e03f      	b.n	8000636 <button_Scan+0xb6>
-		  if(i >= 0 && i <= 3){
+	{
+		if (i >= 0 && i <= 3)
  80005b6:	687b      	ldr	r3, [r7, #4]
  80005b8:	2b00      	cmp	r3, #0
  80005ba:	db06      	blt.n	80005ca <button_Scan+0x4a>
  80005bc:	687b      	ldr	r3, [r7, #4]
  80005be:	2b03      	cmp	r3, #3
  80005c0:	dc03      	bgt.n	80005ca <button_Scan+0x4a>
-			  button_index = i + 4; // do theo schematic thì spi gửi ko giống như button trên mạch
+		{
+			button_index = i + 4;
  80005c2:	687b      	ldr	r3, [r7, #4]
  80005c4:	3304      	adds	r3, #4
  80005c6:	60fb      	str	r3, [r7, #12]
  80005c8:	e018      	b.n	80005fc <button_Scan+0x7c>
-		  } else if (i >= 4 && i <= 7){  //-> cần convert lại cho nó đúng với thứ tự mình mún
+		}
+		else if (i >= 4 && i <= 7)
  80005ca:	687b      	ldr	r3, [r7, #4]
  80005cc:	2b03      	cmp	r3, #3
  80005ce:	dd07      	ble.n	80005e0 <button_Scan+0x60>
  80005d0:	687b      	ldr	r3, [r7, #4]
  80005d2:	2b07      	cmp	r3, #7
  80005d4:	dc04      	bgt.n	80005e0 <button_Scan+0x60>
-			  button_index = 7 - i;
+		{
+			button_index = 7 - i;
  80005d6:	687b      	ldr	r3, [r7, #4]
  80005d8:	f1c3 0307 	rsb	r3, r3, #7
  80005dc:	60fb      	str	r3, [r7, #12]
  80005de:	e00d      	b.n	80005fc <button_Scan+0x7c>
-		  } else if (i >= 8 && i <= 11){
+		}
+		else if (i >= 8 && i <= 11)
  80005e0:	687b      	ldr	r3, [r7, #4]
  80005e2:	2b07      	cmp	r3, #7
  80005e4:	dd06      	ble.n	80005f4 <button_Scan+0x74>
  80005e6:	687b      	ldr	r3, [r7, #4]
  80005e8:	2b0b      	cmp	r3, #11
  80005ea:	dc03      	bgt.n	80005f4 <button_Scan+0x74>
-			  button_index = i + 4;
+		{
+			button_index = i + 4;
  80005ec:	687b      	ldr	r3, [r7, #4]
  80005ee:	3304      	adds	r3, #4
  80005f0:	60fb      	str	r3, [r7, #12]
  80005f2:	e003      	b.n	80005fc <button_Scan+0x7c>
-		  } else {
-			  button_index = 23 - i;
+		}
+		else
+		{
+			button_index = 23 - i;
  80005f4:	687b      	ldr	r3, [r7, #4]
  80005f6:	f1c3 0317 	rsb	r3, r3, #23
  80005fa:	60fb      	str	r3, [r7, #12]
-		  }
-		  if(spi_button & mask) button_count[button_index] = 0;
+		}
+		if (spi_button & mask)
  80005fc:	4b13      	ldr	r3, [pc, #76]	; (800064c <button_Scan+0xcc>)
  80005fe:	881a      	ldrh	r2, [r3, #0]
  8000600:	897b      	ldrh	r3, [r7, #10]
@@ -515,12 +524,14 @@ void button_Scan(){
  8000604:	b29b      	uxth	r3, r3
  8000606:	2b00      	cmp	r3, #0
  8000608:	d005      	beq.n	8000616 <button_Scan+0x96>
+			button_count[button_index] = 0;
  800060a:	4a12      	ldr	r2, [pc, #72]	; (8000654 <button_Scan+0xd4>)
  800060c:	68fb      	ldr	r3, [r7, #12]
  800060e:	2100      	movs	r1, #0
  8000610:	f822 1013 	strh.w	r1, [r2, r3, lsl #1]
  8000614:	e009      	b.n	800062a <button_Scan+0xaa>
-		  else button_count[button_index]++;
+		else
+			button_count[button_index]++;
  8000616:	4a0f      	ldr	r2, [pc, #60]	; (8000654 <button_Scan+0xd4>)
  8000618:	68fb      	ldr	r3, [r7, #12]
  800061a:	f832 3013 	ldrh.w	r3, [r2, r3, lsl #1]
@@ -529,20 +540,18 @@ void button_Scan(){
  8000622:	4a0c      	ldr	r2, [pc, #48]	; (8000654 <button_Scan+0xd4>)
  8000624:	68fb      	ldr	r3, [r7, #12]
  8000626:	f822 1013 	strh.w	r1, [r2, r3, lsl #1]
-//		  if(spi_button & mask) button_count[i] = 0;
-//		  else button_count[i]++;
-		  mask = mask >> 1;
+		mask = mask >> 1;
  800062a:	897b      	ldrh	r3, [r7, #10]
  800062c:	085b      	lsrs	r3, r3, #1
  800062e:	817b      	strh	r3, [r7, #10]
-	  for(int i = 0; i < 16; i++){
+	for (int i = 0; i < 16; i++)
  8000630:	687b      	ldr	r3, [r7, #4]
  8000632:	3301      	adds	r3, #1
  8000634:	607b      	str	r3, [r7, #4]
  8000636:	687b      	ldr	r3, [r7, #4]
  8000638:	2b0f      	cmp	r3, #15
  800063a:	ddbc      	ble.n	80005b6 <button_Scan+0x36>
-	  }
+	}
 }
  800063c:	bf00      	nop
  800063e:	bf00      	nop
